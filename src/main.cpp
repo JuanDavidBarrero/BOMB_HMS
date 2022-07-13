@@ -34,12 +34,12 @@ void loop()
   }
 
 
-  // if (millis() - currentTime >= 1000)
-  // {
-  //   currentTime = millis();
-  //   time_event.super.state = TIME_TICK;
-  //   handle_machine_state(&mensaje_prueba, &time_event.super);
-  // }
+  if (millis() - currentTime >= 1000)
+  {
+    currentTime = millis();
+    time_event.super.state = TIME_TICK;
+    handle_machine_state(&mensaje_prueba, &time_event.super);
+  }
 }
 
 void handle_machine_state(obj_msg_t *obj, event_t *e)
