@@ -52,7 +52,8 @@ typedef enum
 {
     event_realizado,
     evento_ignorad,
-    transicion_evento
+    transicion_evento,
+    transicion_evento_hijo
 } event_status;
 
 // Definir el evento

@@ -34,28 +34,31 @@ void loop()
   }
 
 
-  if (millis() - currentTime >= 1000)
-  {
-    currentTime = millis();
-    time_event.super.state = TIME_TICK;
-    handle_machine_state(&mensaje_prueba, &time_event.super);
-  }
+  // if (millis() - currentTime >= 1000)
+  // {
+  //   currentTime = millis();
+  //   time_event.super.state = TIME_TICK;
+  //   handle_machine_state(&mensaje_prueba, &time_event.super);
+  // }
 }
 
 void handle_machine_state(obj_msg_t *obj, event_t *e)
 {
   event_status status;
   hierarchical_t statusSon;
-  estados_names_t source, target;
+  estados_names_t source, target, source_son, target_son;
+  event_t ee;
 
   source = obj->activate_state;
+  source_son = obj->levelState.nombre;
   status = State_machine(obj, e);
   statusSon = obj->levelState.level;
 
-  if (status == transicion_evento)
+  switch (status)
   {
+  case transicion_evento:
     target = obj->activate_state;
-    event_t ee;
+    
 
     ee.state = EXIT;
     obj->activate_state = source;
@@ -71,5 +74,22 @@ void handle_machine_state(obj_msg_t *obj, event_t *e)
     ee.state = ENTRY;
     obj->activate_state = target;
     State_machine(obj, &ee);
+    break;
+
+  case transicion_evento_hijo:
+    target = obj->activate_state;
+    target_son = obj->levelState.nombre;
+
+    ee.state = EXIT;
+    obj->activate_state = source;
+    obj->levelState.nombre = source_son;
+    State_machine(obj, &ee);
+
+    ee.state = ENTRY;
+    obj->activate_state = target;
+    obj->levelState.nombre = target_son;
+    State_machine(obj, &ee);
+
+    break;
   }
 }
