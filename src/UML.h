@@ -5,27 +5,26 @@
 typedef enum
 {
     MENU,
-    IDLE,
-    S1,
-    S2,
-    S3,
     WINNER,
     BOOM
 } estados_names_t;
 
+typedef enum
+{
+    IDLE,
+    S1,
+    S2,
+    S3
+} estados_son_names_t;
 
 //******* Agreados ******
-typedef enum{
+typedef enum
+{
     PARENT,
     SON,
     SON_EXIT,
-} hierarchical_t; 
+} hierarchical_t;
 
-typedef struct{
-    estados_names_t nombre;
-    hierarchical_t level;
-} states_level_t;
-//******* Agreados ******
 
 // Definir las señales principales
 typedef enum
@@ -44,7 +43,8 @@ typedef struct
 {
     String msg;
     uint32_t current_time;
-    states_level_t levelState;
+    hierarchical_t level;
+    estados_son_names_t activate_state_son;
     estados_names_t activate_state;
 } obj_msg_t;
 
@@ -62,7 +62,8 @@ typedef struct
     uint8_t state; // Aca se almacena el valor de las señales
 } event_t;
 
-typedef struct{
+typedef struct
+{
     event_t super;
     uint8_t time;
 } tick_time_event_t;
@@ -80,5 +81,3 @@ event_status handle_state_boom(obj_msg_t *obj, event_t *ee);
 event_status handle_state_winner(obj_msg_t *obj, event_t *ee);
 
 #endif
-
-

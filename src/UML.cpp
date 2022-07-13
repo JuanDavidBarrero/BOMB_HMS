@@ -5,8 +5,8 @@ void init_state(obj_msg_t *obj)
 {
     event_t ee;
     ee.state = ENTRY;
-    obj->levelState.level = PARENT;
-    obj->levelState.nombre = IDLE;
+    obj->level = PARENT;
+    obj->activate_state_son = IDLE;
     obj->activate_state = MENU;
     obj->current_time = 20;
     State_machine(obj, &ee);
@@ -39,11 +39,11 @@ event_status handle_state_menu(obj_msg_t *obj, event_t *ee)
     switch (ee->state)
     {
     case ENTRY:
-        if (obj->levelState.level == PARENT)
+        if (obj->level == PARENT)
         {
             obj->msg = "Menu";
             Serial.printf("Hola bienvenido al %s\n", obj->msg);
-            obj->levelState.level = SON;
+            obj->level = SON;
         }
         break;
 
@@ -52,13 +52,13 @@ event_status handle_state_menu(obj_msg_t *obj, event_t *ee)
         {
 
             obj->activate_state = BOOM;
-            obj->levelState.level = SON_EXIT;
+            obj->level = SON_EXIT;
             return transicion_evento;
         }
         break;
 
     case EXIT:
-        if (obj->levelState.level == PARENT)
+        if (obj->level == PARENT)
         {
             obj->msg = "Menu";
             Serial.printf("Adios desde %s\n\n", obj->msg);
@@ -67,9 +67,9 @@ event_status handle_state_menu(obj_msg_t *obj, event_t *ee)
         }
     }
 
-    if (obj->levelState.level == SON || obj->levelState.level == SON_EXIT)
+    if (obj->level == SON || obj->level == SON_EXIT)
     {
-        switch (obj->levelState.nombre)
+        switch (obj->activate_state_son)
         {
         case IDLE:
             return handle_idle_state(obj, ee);
@@ -101,14 +101,14 @@ event_status handle_idle_state(obj_msg_t *obj, event_t *ee)
 
     case S:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S1;
+        obj->activate_state_son = S1;
         return transicion_evento_hijo;
 
     case EXIT:
-        if (obj->levelState.level == SON_EXIT)
+        if (obj->level == SON_EXIT)
         {
             obj->activate_state = MENU;
-            obj->levelState.level = PARENT;
+            obj->level = PARENT;
         }
         obj->msg = "Juego";
         Serial.printf("Iniciando el %s\n\n", obj->msg);
@@ -130,7 +130,7 @@ event_status handle_state_s1(obj_msg_t *obj, event_t *ee)
 
     case A:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S2;
+        obj->activate_state_son = S2;
         return transicion_evento_hijo;
 
     case TIME_TICK:
@@ -139,10 +139,10 @@ event_status handle_state_s1(obj_msg_t *obj, event_t *ee)
         return event_realizado;
 
     case EXIT:
-        if (obj->levelState.level == SON_EXIT)
+        if (obj->level == SON_EXIT)
         {
             obj->activate_state = MENU;
-            obj->levelState.level = PARENT;
+            obj->level = PARENT;
         }
         obj->msg = "Juego";
         Serial.printf("Salida del S1 %s\n\n", obj->msg);
@@ -163,12 +163,12 @@ event_status handle_state_s2(obj_msg_t *obj, event_t *ee)
 
     case A:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S1;
+        obj->activate_state_son = S1;
         return transicion_evento_hijo;
 
     case B:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S3;
+        obj->activate_state_son = S3;
         return transicion_evento_hijo;
 
     case TIME_TICK:
@@ -177,10 +177,10 @@ event_status handle_state_s2(obj_msg_t *obj, event_t *ee)
         return event_realizado;
 
     case EXIT:
-        if (obj->levelState.level == SON_EXIT)
+        if (obj->level == SON_EXIT)
         {
             obj->activate_state = MENU;
-            obj->levelState.level = PARENT;
+            obj->level = PARENT;
         }
         obj->msg = "Juego";
         Serial.printf("Salida del S2 %s\n\n", obj->msg);
@@ -201,17 +201,17 @@ event_status handle_state_s3(obj_msg_t *obj, event_t *ee)
 
     case A:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S1;
+        obj->activate_state_son = S1;
         return transicion_evento_hijo;
 
     case B:
         obj->activate_state = MENU;
-        obj->levelState.nombre = S1;
+        obj->activate_state_son = S1;
         return transicion_evento_hijo;
 
     case C:
         obj->activate_state = WINNER;
-        obj->levelState.level = PARENT;
+        obj->level = PARENT;
         return transicion_evento;
 
     case TIME_TICK:
@@ -220,10 +220,10 @@ event_status handle_state_s3(obj_msg_t *obj, event_t *ee)
         return event_realizado;
 
     case EXIT:
-        if (obj->levelState.level == SON_EXIT)
+        if (obj->level == SON_EXIT)
         {
             obj->activate_state = MENU;
-            obj->levelState.level = PARENT;
+            obj->level = PARENT;
         }
         obj->msg = "Juego";
         Serial.printf("Salida del S3 %s\n\n", obj->msg);
@@ -244,8 +244,8 @@ event_status handle_state_boom(obj_msg_t *obj, event_t *ee)
         return event_realizado;
         break;
     case A:
-        obj->levelState.level = PARENT;
-        obj->levelState.nombre = IDLE;
+        obj->level = PARENT;
+        obj->activate_state_son = IDLE;
         obj->current_time = 20;
         obj->activate_state = MENU;
         return transicion_evento;
@@ -270,8 +270,8 @@ event_status handle_state_winner(obj_msg_t *obj, event_t *ee)
         break;
 
     case A:
-        obj->levelState.level = PARENT;
-        obj->levelState.nombre = IDLE;
+        obj->level = PARENT;
+        obj->activate_state_son = IDLE;
         obj->current_time = 20;
         obj->activate_state = MENU;
         return transicion_evento;
